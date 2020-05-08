@@ -67,7 +67,7 @@ begin
   OUTPUT <= fsm & dout(15 downto 0);
 
   --fsm dependent  connections
-  wr_en <= CLKIN when fsm="0010" else '0';
+  wr_en <= '1' when fsm="0010" else '0';
   rd_en <= '1' when fsm="0001" else half_clk;
   srst <= '1' when fsm="0000" else '0';
 
