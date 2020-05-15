@@ -25,8 +25,7 @@ signal empty : std_logic := '0';
 signal half_clk : std_logic := '0';
 signal quarter_clk : std_logic := '0';
 signal fsm : std_logic_vector(4-1 downto 0) := "0100";
-signal pseudorandom_one : integer := 5;
-signal pseudorandom_two : integer := 5;
+signal pseudorandom_one : std_logic_vector(11 downto 0) := (others => '0');
 signal init_counter : integer := 0;
 
 component datafifo_dcfeb is
@@ -63,7 +62,7 @@ begin
 
   --fsm independent connections
   --din <= "000000" & INPUT1;
-  din <= std_logic_vector(to_unsigned(pseudorandom_one,18));
+  din <= "000000" & pseudorandom_one;
   OUTPUT <= fsm & dout(15 downto 0);
 
   --fsm dependent  connections
@@ -71,13 +70,13 @@ begin
   rd_en <= '1' when fsm="0001" else half_clk;
   srst <= '1' when fsm="0000" else '0';
 
-  --fsm logic
-  fsm <= "0001" when fsm="0010" and prog_full='1' else
-	 "0000" when fsm="0001" and empty='1' else
-	 "0011" when fsm="0000" and wr_rst_busy='1' else
-	 "0010" when fsm="0011" and wr_rst_busy='0' else
-	 "0000" when fsm="0100" and init_counter=15 else
-	 fsm;
+  --unclocked fsm logic
+  --  fsm <= "0001" when fsm="0010" and prog_full='1' else
+  --	 "0000" when fsm="0001" and empty='1' else
+  --	 "0011" when fsm="0000" and wr_rst_busy='1' else
+  --	 "0010" when fsm="0011" and wr_rst_busy='0' else
+  --	 "0000" when fsm="0100" and init_counter=15 else
+  --	 fsm;
   
   --generate half_clk and input
   logic: process (CLKIN)
@@ -86,7 +85,19 @@ begin
       -- Pipeline 0 (Buffer for input)
       half_clk <= not half_clk;
       init_counter <= init_counter + 1;
-      pseudorandom_one <= (pseudorandom_one * 293 + 233) mod 983;
+      pseudorandom_one <= pseudorandom_one(10 downto 0) & (pseudorandom_one(1) xor pseudorandom_one(7) xor pseudorandom_one(9) xor pseudorandom_one(10));
+      --clocked fsm logic
+      if fsm="0010" and prog_full='1' then
+	      fsm <= "0001";
+      elsif fsm="0001" and empty='1' then
+	      fsm <= "0000";
+      elsif fsm="0000" and wr_rst_busy='1' then
+	      fsm <= "0011";
+      elsif fsm="0011" and wr_rst_busy='0' then
+	      fsm <= "0010";
+      elsif fsm="0100" and init_counter=15 then
+	      fsm <= "0000";
+      end if;
     end if;
   end process;
   
