@@ -1,0 +1,14 @@
+#-----------------------------------------------------------
+# Vivado v2017.2 (64-bit)
+# SW Build 1909853 on Thu Jun 15 18:39:10 MDT 2017
+# IP Build 1909766 on Thu Jun 15 19:58:00 MDT 2017
+# Start of session at: Thu Jun 11 14:46:33 2020
+# Process ID: 44297
+# Current directory: /net/top/homes/oshiro/odmb/firmware_projects/mcoshiro_odmbDevelopment/gtwizardtest_project/source
+# Command line: vivado gth_project/gth_project.xpr
+# Log file: /net/top/homes/oshiro/odmb/firmware_projects/mcoshiro_odmbDevelopment/gtwizardtest_project/source/vivado.log
+# Journal file: /net/top/homes/oshiro/odmb/firmware_projects/mcoshiro_odmbDevelopment/gtwizardtest_project/source/vivado.jou
+#-----------------------------------------------------------
+start_gui
+exit
+INFO: [Common 17-206] Exiting Vivado at Thu Jun 11 14:47:23 2020...

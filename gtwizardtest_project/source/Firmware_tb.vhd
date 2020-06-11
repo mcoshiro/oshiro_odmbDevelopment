@@ -133,7 +133,7 @@ begin
   --data(43 downto 24) <= output_s;
   --data(44) <= sysclkQuarter;
   data(19 downto 0) <= output_s;
-  data(20) <= output_clk;
+  --data(20) <= output_clk;
 
   -- Simulation process.
   inputGenerator_i: process (sysclk) is
