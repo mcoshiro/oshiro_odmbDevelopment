@@ -1,6 +1,8 @@
 library IEEE;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
+use ieee.std_logic_misc.all;
+use ieee.std_logic_unsigned.all;
 
 library UNISIM;
 use UNISIM.VComponents.all;
@@ -9,10 +11,7 @@ use work.Firmware_pkg.all;
 
 entity Firmware is
   PORT (
-    INPUT1 : in std_logic_vector(11 downto 0);
-    INPUT2 : in std_logic_vector(11 downto 0);
     OUTPUT : out std_logic_vector(19 downto 0);
-    --new gth ports
     rxclk_out : out std_logic;
     mgtrefclk0_x0y3_p: in std_logic;
     mgtrefclk0_x0y3_n: in std_logic;
@@ -25,9 +24,6 @@ entity Firmware is
     ch1_gthtxn_out: out std_logic;
     ch1_gthtxp_out: out std_logic;
     clk40 : in std_logic
-    --sel_si750_clk_i: in std_logic;
-    --CLK_IN_P: in std_logic;
-    --CLK_IN_N: in std_logic;
 );
 end Firmware;
 
@@ -87,9 +83,8 @@ signal rxcommadet_int : std_logic_vector(1 downto 0);
 signal txctrl2_int : std_logic_vector(15 downto 0);
 signal reset_alignment : std_logic := '0';
 signal align_reset_done : std_logic := '1';
+signal slv_counter : std_logic_vector(15 downto 0) := x"0000";
 
---signal clk_out80 : std_logic;
---signal inclk_buf : std_logic;
 --hard-coded pointer to master channel's packed index (see exdes for general calculation)
 --selects index of rxoutclk_out/txoutclk_out
 constant master_ch_packed_idx : integer := 1;
@@ -162,12 +157,6 @@ component gtwizard_test is
     rxbyteisaligned_out : out STD_LOGIC_VECTOR ( 1 downto 0 );
     rxbyterealign_out : out STD_LOGIC_VECTOR ( 1 downto 0 );
     rxcommadet_out : out STD_LOGIC_VECTOR ( 1 downto 0 )
-    --rxcommadeten_in
-    --rxmcommaalignen_in
-    --rxpcommaalignen_in
-    --rxbyteisaligned_out
-    --rxbytealign_out
-    --rxcommadet_out
   );
 end component;
   
@@ -356,21 +345,24 @@ begin
     --generate tx data: after reset, send comma characters until counter saturates, then start sending counter
     if (reset_alignment='1') then
       counter1 <= 0;
+      slv_counter <= x"0000";
       align_reset_counter <= 0;
       align_reset_done <= '0';
-      txctrl2_int <= x"0f0f";
+      txctrl2_int <= x"0f03";
     end if;
     if rising_edge(gtwiz_tx_usrclk_out) then
       if (align_reset_done='1') then
         counter1 <= counter1 + 1;
-        gtwiz_userdata_tx_int <= x"530c530c503c" & std_logic_vector(to_unsigned(counter1,16));
+        slv_counter <= slv_counter + 1;
+        gtwiz_userdata_tx_int <= x"503c503c" & slv_counter & x"503c";
+        --gtwiz_userdata_tx_int <= x"530c530c503c" & std_logic_vector(to_unsigned(counter1,16));
       else
         align_reset_counter <= align_reset_counter + 1;
         if (align_reset_counter=510) then
           txctrl2_int <= x"0000";
           align_reset_done <= '1';
         end if;
-        gtwiz_userdata_tx_int <= x"3c3c3c3c3c3c3c3c";
+        gtwiz_userdata_tx_int <= x"0000003c0000003c";
       end if;
     end if;
   end process;
