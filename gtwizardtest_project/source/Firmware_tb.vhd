@@ -40,7 +40,7 @@ architecture Behavioral of Firmware_tb is
   component ila is
   port (
     clk : in std_logic := '0';
-    probe0 : in std_logic_vector(31 downto 0) := (others=> '0')
+    probe0 : in std_logic_vector(63 downto 0) := (others=> '0')
     --probe1 : in std_logic_vector(4095 downto 0) := (others => '0')
   );
   end component;
@@ -53,10 +53,11 @@ architecture Behavioral of Firmware_tb is
   -- Constants
   constant bw_output : integer := 20;
   -- Output to firmware signals
-  signal output_s: std_logic_vector(bw_output-1 downto 0) := (others=> '0');
+  --signal output_s: std_logic_vector(bw_output-1 downto 0) := (others=> '0');
+  signal output_s : std_logic_vector(63 downto 0) := (others=>'0');
   signal output_clk : std_logic := '0';
   -- ILA
-  signal data : std_logic_vector(31 downto 0) := (others=> '0');
+  signal data : std_logic_vector(63 downto 0) := (others=> '0');
 
 begin
 
@@ -97,7 +98,7 @@ begin
     --probe0 => trig0,
     probe0 => data
   );
-  data(19 downto 0) <= output_s;
+  data <= output_s;
 
   -- Simulation process.
 
