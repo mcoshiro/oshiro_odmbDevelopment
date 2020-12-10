@@ -1,0 +1,9 @@
+*.jou
+*.log
+odmb7_baseline_vme/baseline_project/*
+odmb7_baseline_vme/baseline_project_*
+odmb7_baseline_vme/ip/*
+!odmb7_baseline_vme/ip/*/*.xci
+!odmb7_baseline_vme/baseline_project/baseline_project.xpr
+
+
